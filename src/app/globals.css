@@ -320,30 +320,32 @@ body {
 .btn-primary {
   background: var(--g-600);
   color: #fff;
-  border: none;
-  border-radius: var(--radius-btn);
-  padding: 9px 20px;
-  font-size: 12.5px;
-  font-weight: 700;
+  border: 1px solid var(--g-700);
+  border-radius: 0px;
+  padding: 10px 20px;
+  font-size: 13px;
+  font-weight: 800;
   cursor: pointer;
   display: inline-flex; align-items: center; gap: 6px;
-  transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   font-family: inherit;
+  box-shadow: 0 2px 6px rgba(0,108,53,0.18);
 }
 .btn-primary:hover {
   background: var(--g-700);
+  border-color: var(--g-900);
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(0,108,53,0.28);
+  box-shadow: 0 6px 18px rgba(0,108,53,0.32);
 }
 
 .btn-ghost {
   background: transparent;
   color: var(--text-secondary);
   border: 1px solid var(--border);
-  border-radius: var(--radius-btn);
-  padding: 8px 16px;
+  border-radius: 0px;
+  padding: 9px 16px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   display: inline-flex; align-items: center; gap: 6px;
   transition: all 0.15s;
@@ -354,9 +356,9 @@ body {
 /* ─── Inputs ─────────────────────────────────────── */
 .input {
   background: var(--white);
-  border: 1.5px solid var(--border);
-  border-radius: 10px;
-  padding: 9px 14px;
+  border: 1.5px solid #CBD5E1;
+  border-radius: 0px;
+  padding: 10px 14px;
   font-size: 13px;
   color: var(--text-primary);
   width: 100%;
@@ -365,8 +367,8 @@ body {
   font-family: inherit;
 }
 .input:focus {
-  border-color: var(--g-500);
-  box-shadow: 0 0 0 3px rgba(0,108,53,0.10);
+  border-color: var(--g-600);
+  box-shadow: 0 0 0 1px var(--g-600);
 }
 .input::placeholder { color: var(--text-muted); }
 

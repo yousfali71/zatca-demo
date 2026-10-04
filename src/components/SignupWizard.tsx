@@ -96,7 +96,7 @@ export const SignupWizard: React.FC<SignupWizardProps> = ({ onSuccess, onSwitchT
 
       {errorMsg && (
         <div
-          className="mb-5 p-3.5 rounded-xl text-sm flex items-center justify-between"
+          className="mb-5 p-3.5 rounded-none text-sm flex items-center justify-between"
           style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#B91C1C' }}
         >
           <span>{errorMsg}</span>
@@ -115,28 +115,28 @@ export const SignupWizard: React.FC<SignupWizardProps> = ({ onSuccess, onSwitchT
         <div>
           <label className="label">الاسم الكامل *</label>
           <input type="text" name="name" value={formData.name} onChange={handleChange}
-            placeholder="مثال: أحمد علي" className="input" />
+            placeholder="مثال: أحمد علي" className="input" style={{ borderRadius: 0 }} />
         </div>
         <div>
           <label className="label">البريد الإلكتروني *</label>
           <input type="email" name="email" value={formData.email} onChange={handleChange}
-            placeholder="owner@company.sa" className="input" style={{ direction: 'ltr', textAlign: 'left' }} />
+            placeholder="owner@company.sa" className="input" style={{ direction: 'ltr', textAlign: 'left', borderRadius: 0 }} />
         </div>
         <div>
           <label className="label">رقم الجوال (اختياري)</label>
           <input type="tel" name="phone" value={formData.phone} onChange={handleChange}
-            placeholder="+966501234567" className="input" style={{ direction: 'ltr', textAlign: 'left' }} />
+            placeholder="+966501234567" className="input" style={{ direction: 'ltr', textAlign: 'left', borderRadius: 0 }} />
         </div>
         <div>
           <label className="label">كلمة المرور *</label>
           <input type="password" name="password" value={formData.password} onChange={handleChange}
-            placeholder="••••••••••••" className="input" />
+            placeholder="••••••••••••" className="input" style={{ borderRadius: 0 }} />
         </div>
 
 
 
         <div
-          className="flex items-start gap-2 p-3 rounded-xl text-[11px]"
+          className="flex items-start gap-2 p-3 rounded-none text-[11px]"
           style={{ background: '#F3F5F4', border: '1px solid #E5EDE9', color: '#4A6357' }}
         >
           <ShieldCheck className="w-4 h-4 flex-shrink-0" style={{ color: '#006C35' }} />
@@ -147,7 +147,7 @@ export const SignupWizard: React.FC<SignupWizardProps> = ({ onSuccess, onSwitchT
           <button type="button" onClick={onSwitchToLogin} className="text-xs font-semibold" style={{ color: '#4A6357' }}>
             لديك حساب؟ تسجيل الدخول
           </button>
-          <button type="submit" disabled={loading} className="btn-primary">
+          <button type="submit" disabled={loading} className="btn-primary" style={{ borderRadius: 0 }}>
             {loading ? <span>جاري إنشاء الحساب...</span> : (
               <>
                 <span>إنشاء الحساب</span>

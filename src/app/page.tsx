@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
@@ -34,34 +34,51 @@ export default function Home() {
 
   React.useEffect(() => {
     if (!googleClientId || typeof window === 'undefined') return;
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.defer = true;
-    script.onload = () => {
+
+    const initGoogle = () => {
       if ((window as any).google?.accounts?.id) {
-        (window as any).google.accounts.id.initialize({
-          client_id: googleClientId,
-          callback: async (response: any) => {
-            if (response.credential) {
-              setLoggingIn(true);
-              setLoginError(null);
-              try {
-                await loginWithGoogle(response.credential);
-              } catch (err: any) {
-                setLoginError(err?.message || 'فشل تسجيل الدخول بواسطة Google');
-              } finally {
-                setLoggingIn(false);
+        try {
+          (window as any).google.accounts.id.initialize({
+            client_id: googleClientId,
+            auto_select: false,
+            callback: async (response: any) => {
+              if (response.credential) {
+                setLoggingIn(true);
+                setLoginError(null);
+                try {
+                  await loginWithGoogle(response.credential);
+                } catch (err: any) {
+                  setLoginError(err?.message || 'فشل تسجيل الدخول بواسطة Google');
+                } finally {
+                  setLoggingIn(false);
+                }
               }
             }
-          }
-        });
+          });
+        } catch (e) {
+          // ignore duplicate initialization warnings in dev mode
+        }
       }
     };
-    document.body.appendChild(script);
-    return () => {
-      document.body.removeChild(script);
-    };
+
+    if ((window as any).google?.accounts?.id) {
+      initGoogle();
+      return;
+    }
+
+    const scriptId = 'google-gsi-script';
+    let script = document.getElementById(scriptId) as HTMLScriptElement | null;
+    if (!script) {
+      script = document.createElement('script');
+      script.id = scriptId;
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.defer = true;
+      script.onload = initGoogle;
+      document.body.appendChild(script);
+    } else {
+      script.addEventListener('load', initGoogle);
+    }
   }, [googleClientId, loginWithGoogle]);
 
   const handleGoogleClick = () => {
@@ -70,7 +87,21 @@ export default function Home() {
       return;
     }
     if ((window as any).google?.accounts?.id) {
-      (window as any).google.accounts.id.prompt();
+      try {
+        (window as any).google.accounts.id.prompt((notification: any) => {
+          if (notification.isNotDisplayed && notification.isNotDisplayed()) {
+            const reason = notification.getNotDisplayedReason ? notification.getNotDisplayedReason() : '';
+            console.warn('Google Prompt not displayed reason:', reason);
+            if (reason === 'opt_out_or_no_session' || reason === 'suppressed_by_user') {
+              setLoginError('يرجى التأكد من سماح المتصفح بالنوافذ المنبثقة وإضافة http://localhost:3000 في Google Cloud Console');
+            }
+          }
+        });
+      } catch (err: any) {
+        setLoginError('تعذّر فتح نافذة Google. يرجى التأكد من إضافة http://localhost:3000 في Authorised JavaScript origins');
+      }
+    } else {
+      setLoginError('جاري تحميل خدمة Google، يرجى المحاولة مرة أخرى...');
     }
   };
 
@@ -94,7 +125,7 @@ export default function Home() {
   /* ── Auth Screens ───────────────────────────── */
   if (!currentUser) {
     return (
-      <div style={{ minHeight: '100vh', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+      <div style={{ minHeight: '100vh', position: 'relative', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
 
         {/* ── Full-screen blurred dashboard background ── */}
         <div style={{
@@ -102,59 +133,81 @@ export default function Home() {
           backgroundImage: 'url(/auth-bg.png)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          filter: 'blur(6px) brightness(0.72) saturate(1.1)',
+          filter: 'blur(6px) brightness(0.68) saturate(1.1)',
           transform: 'scale(1.05)',
         }} />
 
         {/* ── Dark green tint overlay ── */}
         <div style={{
           position: 'absolute', inset: 0, zIndex: 1,
-          background: 'linear-gradient(135deg, rgba(0,26,12,0.62) 0%, rgba(0,66,30,0.50) 50%, rgba(0,108,53,0.38) 100%)',
+          background: 'linear-gradient(135deg, rgba(0,26,12,0.72) 0%, rgba(0,55,25,0.60) 50%, rgba(0,95,45,0.48) 100%)',
         }} />
 
         {/* ── Floating decorative orbs ── */}
         <div style={{
-          position: 'absolute', top: '12%', right: '8%', zIndex: 1,
-          width: 260, height: 260, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(0,108,53,0.25) 0%, transparent 70%)',
-          filter: 'blur(40px)',
+          position: 'absolute', top: '15%', right: '10%', zIndex: 1,
+          width: 280, height: 280, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(0,108,53,0.30) 0%, transparent 70%)',
+          filter: 'blur(45px)',
         }} />
         <div style={{
-          position: 'absolute', bottom: '10%', left: '6%', zIndex: 1,
-          width: 200, height: 200, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(200,169,81,0.20) 0%, transparent 70%)',
-          filter: 'blur(35px)',
+          position: 'absolute', bottom: '12%', left: '8%', zIndex: 1,
+          width: 240, height: 240, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(200,169,81,0.22) 0%, transparent 70%)',
+          filter: 'blur(40px)',
         }} />
 
-        {/* ── Form panel ── */}
+        {/* ── Top Header Bar for Desktop (Large screens) ── */}
+        <header
+          dir="ltr"
+          className="w-full absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-6 sm:px-12 py-6"
+        >
+          {/* Top Left: Logo + zakPocket text */}
+          <div className="flex items-center gap-3.5">
+            <img
+              src="/white-zakPocket.png"
+              alt="zakPocket Logo"
+              className="h-9 md:h-11 w-auto object-contain drop-shadow-md"
+            />
+            <span className="text-2xl md:text-3xl font-black tracking-tight text-white font-sans drop-shadow-md">
+              zak<span className="text-emerald-400">Pocket</span>
+            </span>
+          </div>
+
+          {/* Top Right: Tagline line (No background box) */}
+          <div dir="rtl" className="hidden sm:block text-right">
+            <span className="text-white text-xs md:text-sm font-bold tracking-wide drop-shadow-md">
+              ربط المنشآت السعودية مع هيئة الزكاة والضريبة والجمارك
+            </span>
+          </div>
+        </header>
+
+        {/* Mobile secondary subtitle above card */}
+        <div className="sm:hidden relative z-10 mb-4 text-center px-4 pt-16">
+          <p className="text-xs font-semibold text-white drop-shadow inline-block">
+            ربط المنشآت السعودية مع هيئة الزكاة والضريبة والجمارك
+          </p>
+        </div>
+
+        {/* ── Form panel with PREMIUM SHARP CORNERS ── */}
         <div style={{
           position: 'relative', zIndex: 10,
           width: '100%',
-          maxWidth: 420,
+          maxWidth: 440,
           margin: '0 auto',
           padding: '0 16px',
         }}>
 
-          {/* Brand mark */}
-          <div style={{ textAlign: 'center', marginBottom: 24 }}>
-
-            <h1 style={{ fontSize: 22, fontWeight: 900, color: '#ffffff', margin: '0 0 5px', textShadow: '0 2px 8px rgba(0,0,0,0.4)' }}>
-              ZATCA TaxFlow
-            </h1>
-            <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.65)', fontWeight: 600, margin: 0 }}>
-              ربط المنشآت السعودية مع هيئة الزكاة والضريبة والجمارك
-            </p>
-          </div>
-
-          {/* Glassmorphism card */}
+          {/* Glassmorphism sharp card */}
           <div style={{
-            background: 'rgba(255,255,255,0.92)',
-            backdropFilter: 'blur(20px) saturate(1.4)',
-            WebkitBackdropFilter: 'blur(20px) saturate(1.4)',
-            border: '1px solid rgba(255,255,255,0.60)',
-            borderRadius: 24,
-            padding: 'clamp(22px, 6vw, 32px) clamp(18px, 6vw, 36px)',
-            boxShadow: '0 24px 64px rgba(0,26,12,0.28), 0 2px 8px rgba(0,108,53,0.10)',
+            background: 'rgba(255,255,255,0.96)',
+            backdropFilter: 'blur(24px) saturate(1.4)',
+            WebkitBackdropFilter: 'blur(24px) saturate(1.4)',
+            border: '1px solid rgba(255,255,255,0.90)',
+            borderTop: '4px solid #006C35',
+            borderRadius: 0,
+            padding: 'clamp(24px, 6vw, 36px) clamp(20px, 6vw, 36px)',
+            boxShadow: '0 24px 64px rgba(0,20,10,0.35), 0 2px 8px rgba(0,0,0,0.10)',
           }}>
             {authView === 'signup' ? (
               <SignupWizard
@@ -165,10 +218,10 @@ export default function Home() {
               <div style={{ textAlign: 'right' }}>
                 {/* Form header */}
                 <div style={{ textAlign: 'center', marginBottom: 24 }}>
-                  <h2 style={{ fontSize: 20, fontWeight: 900, color: 'var(--text-primary)', margin: '0 0 5px' }}>
+                  <h2 style={{ fontSize: 22, fontWeight: 900, color: 'var(--text-primary)', margin: '0 0 6px', letterSpacing: '-0.02em' }}>
                     تسجيل الدخول
                   </h2>
-                  <p style={{ fontSize: 12, color: 'var(--text-secondary)', margin: 0 }}>
+                  <p style={{ fontSize: 12.5, color: 'var(--text-secondary)', margin: 0, fontWeight: 600 }}>
                     أدخل بيانات حسابك للدخول إلى لوحة التحكم
                   </p>
                 </div>
@@ -179,17 +232,16 @@ export default function Home() {
                   onClick={handleGoogleClick}
                   style={{
                     width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                    padding: '11px 16px', borderRadius: 12,
-                    border: '1.5px solid var(--border)', background: '#fff',
+                    padding: '11px 16px', borderRadius: 0,
+                    border: '1.5px solid #CBD5E1', background: '#fff',
                     fontSize: 13, fontWeight: 700, color: 'var(--text-primary)',
                     cursor: 'pointer', opacity: 1, marginBottom: 18, fontFamily: 'inherit',
-                    boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                    boxShadow: '0 2px 6px rgba(0,0,0,0.04)',
                     transition: 'all 0.15s ease',
                   }}
-                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--g-600)'; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border)'; }}
+                  onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--g-600)'; e.currentTarget.style.background = '#F8FAFC'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#CBD5E1'; e.currentTarget.style.background = '#fff'; }}
                 >
-                  {/* Google SVG icon */}
                   <svg width="18" height="18" viewBox="0 0 48 48" style={{ flexShrink: 0 }}>
                     <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z" />
                     <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z" />
@@ -202,47 +254,43 @@ export default function Home() {
 
                 {/* Divider */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 18 }}>
-                  <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+                  <div style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
                   <span style={{ fontSize: 11, color: 'var(--text-muted)', fontWeight: 600, whiteSpace: 'nowrap' }}>أو بالبريد الإلكتروني</span>
-                  <div style={{ flex: 1, height: 1, background: 'var(--border)' }} />
+                  <div style={{ flex: 1, height: 1, background: '#E2E8F0' }} />
                 </div>
 
                 {/* Email / pass form */}
                 <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                   {loginError && (
-                    <div style={{ padding: '10px 12px', borderRadius: 10, background: '#FEF2F2', border: '1px solid #FECACA', color: '#B91C1C', fontSize: 12, fontWeight: 600 }}>
+                    <div style={{ padding: '10px 12px', borderRadius: 0, background: '#FEF2F2', border: '1px solid #FECACA', color: '#B91C1C', fontSize: 12, fontWeight: 600 }}>
                       {loginError}
                     </div>
                   )}
                   <div>
-                    <label className="label">البريد الإلكتروني</label>
+                    <label className="label">البريد الإلكتروني *</label>
                     <input
                       type="email" required value={loginEmail}
                       onChange={e => setLoginEmail(e.target.value)}
                       placeholder="owner@company.sa"
                       className="input"
-                      style={{ direction: 'ltr', textAlign: 'left' }}
+                      style={{ direction: 'ltr', textAlign: 'left', borderRadius: 0 }}
                     />
                   </div>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 5 }}>
-                      <button type="button" style={{ fontSize: 11.5, color: 'var(--g-600)', fontWeight: 700, background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
-                        نسيت كلمة المرور؟
-                      </button>
-                      <label className="label" style={{ marginBottom: 0 }}>كلمة المرور</label>
-                    </div>
+                    <label className="label">كلمة المرور *</label>
                     <input
                       type="password" required value={loginPass}
                       onChange={e => setLoginPass(e.target.value)}
                       placeholder="••••••••••"
                       className="input"
+                      style={{ borderRadius: 0 }}
                     />
                   </div>
 
                   <button
                     type="submit" disabled={loggingIn}
                     className="btn-primary"
-                    style={{ width: '100%', justifyContent: 'center', padding: '13px 20px', fontSize: 13.5, borderRadius: 12, marginTop: 2 }}
+                    style={{ width: '100%', justifyContent: 'center', padding: '13px 20px', fontSize: 13.5, borderRadius: 0, marginTop: 4 }}
                   >
                     {loggingIn ? 'جاري الدخول...' : 'دخول لوحة التحكم'}
                   </button>
@@ -251,7 +299,7 @@ export default function Home() {
                 {/* Sign up link */}
                 <div style={{
                   textAlign: 'center', marginTop: 20,
-                  paddingTop: 16, borderTop: '1px solid var(--border)',
+                  paddingTop: 16, borderTop: '1px solid #E2E8F0',
                   fontSize: 12.5, color: 'var(--text-secondary)'
                 }}>
                   ليس لديك حساب؟{' '}
@@ -265,9 +313,33 @@ export default function Home() {
               </div>
             )}
           </div>
-
-
         </div>
+
+        {/* ── Footer sticking to bottom of view screen ── */}
+        <footer
+          dir="ltr"
+          style={{
+            position: 'absolute',
+            bottom: 16,
+            left: 0,
+            right: 0,
+            zIndex: 20,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8,
+          }}
+          className="text-sm md:text-base font-semibold text-white/90 drop-shadow-md tracking-wide"
+        >
+          <span>made by</span>
+          <img
+            src="/whiteLogo.png"
+            alt="Orqeva Logo"
+            className="h-6 md:h-7 w-auto object-contain drop-shadow"
+          />
+          <span className="font-extrabold text-white tracking-wider">Orqeva</span>
+          <span className="text-white/80 font-medium">2026</span>
+        </footer>
       </div>
     );
   }

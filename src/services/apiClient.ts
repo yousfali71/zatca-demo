@@ -41,6 +41,26 @@ export interface ZatcaUnitDto {
   lastError?: { errorMessage: string; createdAt: string } | null;
 }
 
+export interface ZatcaStatusDto {
+  environment: string;
+  sellerName?: string;
+  vatNumber?: string;
+  invoicesSummary?: {
+    CLEARED?: number;
+    REPORTED?: number;
+    FAILED?: number;
+    [key: string]: number | undefined;
+  };
+}
+
+export interface ZatcaLogDto {
+  id: string;
+  action: string;
+  status: string;
+  message?: string;
+  createdAt: string;
+}
+
 const API_HOST = process.env.NEXT_PUBLIC_API_HOST !== undefined 
   ? process.env.NEXT_PUBLIC_API_HOST 
   : (typeof window !== 'undefined' ? '' : 'https://e-commerce-system-six.vercel.app');
@@ -254,6 +274,23 @@ class ApiService {
 
   async getZatcaUnitStatus(unitId: string) {
     return this.request<ZatcaUnitDto>(`/zatca/units/${unitId}/status`);
+  }
+
+  async renewZatcaUnit(unitId: string) {
+    return this.request<unknown>(`/zatca/units/${unitId}/renew`, { method: 'POST' });
+  }
+
+  async getZatcaStatus() {
+    return this.request<ZatcaStatusDto>('/zatca/status');
+  }
+
+  async getZatcaLogs(params?: { status?: string; page?: number; limit?: number }) {
+    const query = new URLSearchParams();
+    if (params?.status) query.append('status', params.status);
+    if (params?.page) query.append('page', String(params.page));
+    if (params?.limit) query.append('limit', String(params.limit));
+    const queryString = query.toString() ? `?${query.toString()}` : '';
+    return this.request<ZatcaLogDto[] | { data: ZatcaLogDto[] }>(`/zatca/logs${queryString}`);
   }
 }
 
