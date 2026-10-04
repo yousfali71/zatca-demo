@@ -10,8 +10,8 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: 'فارما-demo ERP - لوحة تتبع وإدارة المناديب الميدانيين',
-  description: 'نظام CRM وERP دوائي متكامل لمتابعة زيارات المناديب الميدانيين، وعهد المخزون، وتسوية النقدية.',
+  title: 'منظومة ZATCA TaxFlow - منصة حساب وحسابات الضرائب والفوترة الإلكترونية في السعودية',
+  description: 'منظومة متكاملة لربط المنشآت والشركات السعودية مع هيئة الزكاة والضريبة والجمارك (ZATCA Phase 2) وإدارة المبيعات والمخزون والإقرارات الضريبية.',
 };
 
 export default function RootLayout({
@@ -20,8 +20,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ar" dir="rtl">
-      <body className={`${cairo.variable} font-cairo text-slate-900 antialiased selection:bg-purple-500 selection:text-white`}>
+    <html lang="ar" dir="rtl" className="h-full">
+      <body
+        className={`${cairo.variable} font-cairo antialiased h-full`}
+        style={{ background: '#F3F5F4', color: '#0D2118', overflowX: 'hidden' }}
+      >
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

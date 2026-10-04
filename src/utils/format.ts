@@ -1,8 +1,17 @@
 /**
- * Format a number with comma separators using a fixed locale (en-US).
- * This avoids SSR/hydration mismatches when html[lang="ar"] causes
- * browsers to switch to Arabic-Indic numerals on the client side.
+ * Formats a number as Saudi Riyals (SAR) without hydration mismatch.
+ * Uses toLocaleString with 'en-SA' locale for consistent SSR/CSR output.
  */
-export function fmt(value: number): string {
-  return value.toLocaleString('en-US');
+export function formatSar(amount: number): string {
+  return amount.toLocaleString('en-SA', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
+/**
+ * Formats a percentage value.
+ */
+export function formatPercent(value: number, decimals = 1): string {
+  return `${value.toFixed(decimals)}%`;
 }

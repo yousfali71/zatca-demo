@@ -1,109 +1,106 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { DEMO_USERS } from '../../mock/usersData';
 import { useRouter } from 'next/navigation';
-import { Activity, ShieldCheck, Crown, Briefcase, UserCheck, Package, Landmark, ArrowLeft } from 'lucide-react';
-import { UserRole } from '../../types/pharma';
-
-const ROLE_ICONS: Record<UserRole, React.ReactNode> = {
-  SUPER_ADMIN: <Crown className="w-5 h-5 text-amber-400" />,
-  SALES_MANAGER: <Briefcase className="w-5 h-5 text-cyan-400" />,
-  MEDICAL_REP: <UserCheck className="w-5 h-5 text-teal-400" />,
-  INVENTORY_OFFICER: <Package className="w-5 h-5 text-indigo-400" />,
-  FINANCE_OFFICER: <Landmark className="w-5 h-5 text-emerald-400" />,
-};
-
-const ROLE_TITLES_AR: Record<UserRole, string> = {
-  SUPER_ADMIN: 'المشرف العام',
-  SALES_MANAGER: 'مدير المبيعات',
-  MEDICAL_REP: 'المندوب الطبي',
-  INVENTORY_OFFICER: 'مسؤول المخزون',
-  FINANCE_OFFICER: 'مسؤول الخزينة',
-};
+import { ShieldCheck, Building2, UserCheck } from 'lucide-react';
+import Link from 'next/link';
 
 export default function LoginPage() {
-  const { loginAsUser } = useAuth();
+  const { login } = useAuth();
   const router = useRouter();
 
-  const handleQuickLogin = (userId: string) => {
-    loginAsUser(userId);
-    router.push('/');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    try {
+      await login(email, password);
+      router.push('/');
+    } catch (err: any) {
+      setError(err?.message || 'تعذّر تسجيل الدخول');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen text-slate-900 flex flex-col justify-center items-center p-6 relative overflow-hidden">
-      <div className="w-full max-w-4xl relative z-10 space-y-8">
-        {/* Header Logo */}
-        <div className="text-center space-y-3">
-          <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/90 border border-purple-100 shadow-sm mb-2">
-            <span className="text-lg font-black tracking-tight text-slate-900">
-              فارما-demo <span className="text-purple-600">ERP & CRM</span>
-            </span>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 flex items-center justify-center shadow-md shadow-purple-500/20">
-              <Activity className="w-5 h-5 text-white font-bold" />
-            </div>
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-6">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <div className="w-10 h-10 rounded-xl ribbon-gradient-emerald text-white flex items-center justify-center font-black text-xl shadow-lg shadow-emerald-900/20">
+            Z
           </div>
-
-          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-            نظام تتبع المناديب — الدخول متعدد الأدوار
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 font-bold max-w-xl mx-auto">
-            تجربة تتبع القوة الميدانية الفوري، عهدة مخزون السيارات، وتسوية نقدية الخزينة.
-          </p>
+          <span className="text-2xl font-black tracking-tight text-slate-900">
+            ZATCA <span className="text-emerald-700">TaxFlow</span>
+          </span>
         </div>
-
-        {/* 1-Click Role Quick Login Cards */}
-        <div className="p-7 rounded-[28px] bg-white/90 border border-purple-100/60 shadow-xl backdrop-blur-xl space-y-6">
-          <div className="flex items-center justify-between border-b border-purple-100/60 pb-4">
-            <span className="text-xs font-extrabold text-purple-700 bg-purple-50 px-3 py-1 rounded-full border border-purple-100 flex items-center gap-1">
-              اختر أي دور
-            </span>
-            <div className="flex items-center gap-2">
-              <h2 className="text-base font-black text-slate-900">الدخول السريع بنقرة واحدة</h2>
-              <ShieldCheck className="w-5 h-5 text-purple-600" />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {DEMO_USERS.map((user) => (
-              <div
-                key={user.id}
-                onClick={() => handleQuickLogin(user.id)}
-                className="p-4.5 rounded-2xl bg-slate-50/70 border border-purple-100 hover:border-purple-300 hover:bg-purple-50/40 transition-all duration-200 cursor-pointer group flex items-center justify-between shadow-sm"
-              >
-                <button className="px-4 py-2 rounded-full bg-purple-100 group-hover:bg-purple-600 text-purple-700 group-hover:text-white font-extrabold text-xs transition-all flex items-center gap-1 shrink-0 cursor-pointer">
-                  <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-                  <span>دخول</span>
-                </button>
-
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <div className="flex items-center gap-2 justify-end">
-                      {ROLE_ICONS[user.role]}
-                      <h3 className="font-extrabold text-slate-900 text-sm group-hover:text-purple-600 transition-colors">
-                        {user.name}
-                      </h3>
-                    </div>
-                    <p className="text-xs text-purple-600 font-bold">{user.roleTitle}</p>
-                    <p className="text-[11px] text-slate-400 font-bold mt-0.5">{user.department}</p>
-                  </div>
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-purple-200 group-hover:border-purple-500 transition-colors shadow-sm"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Footer info */}
-        <p className="text-center text-xs text-slate-400 font-bold">
-          مبني بـ Next.js 15، TypeScript وTailwind CSS — فارما-demo ERP
+        <p className="text-xs text-slate-500 font-semibold">
+          منظومة ربط وتكامل أصحاب الأعمال مع هيئة الزكاة والضريبة والجمارك بالمملكة العربية السعودية
         </p>
+      </div>
+
+      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+        <div className="bg-white py-8 px-6 shadow-xl shadow-slate-200/50 sm:rounded-2xl border border-slate-200/80 sm:px-10">
+          <form onSubmit={handleSubmit} className="space-y-5 text-right">
+            <div className="text-center">
+              <h2 className="text-xl font-black text-slate-900">تسجيل الدخول لمنصة ZATCA</h2>
+              <p className="text-xs text-slate-500 mt-0.5">أدخل البريد الإلكتروني الخاص بمالك المنشأة</p>
+            </div>
+
+            {error && (
+              <div className="p-3 rounded-lg text-xs font-semibold" style={{ background: '#FEF2F2', border: '1px solid #FECACA', color: '#B91C1C' }}>
+                {error}
+              </div>
+            )}
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">البريد الإلكتروني الرسمي *</label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="owner@saudi-solutions.sa"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm dir-ltr text-right bg-white"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">كلمة المرور *</label>
+              <input
+                type="password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••••••"
+                className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm bg-white"
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm transition shadow-md shadow-emerald-900/10"
+            >
+              {loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول للنظام'}
+            </button>
+          </form>
+
+          <div className="pt-4 border-t border-slate-200 text-center mt-6">
+            <p className="text-xs text-slate-600">
+              منشأة جديدة؟{' '}
+              <Link href="/signup" className="font-bold text-emerald-700 hover:underline">
+                أنشئ حسابك الآن
+              </Link>
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

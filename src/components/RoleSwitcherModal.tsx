@@ -1,109 +1,95 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import { DEMO_USERS } from '../mock/usersData';
-import { Crown, Briefcase, UserCheck, Package, Landmark, X, ShieldCheck } from 'lucide-react';
-import { UserRole } from '../types/pharma';
+import { UserRole } from '../types/zatcaErp';
+import { X, UserCheck, CheckCircle2 } from 'lucide-react';
 
-interface Props {
+interface RoleSwitcherModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const ROLE_ICONS: Record<UserRole, React.ReactNode> = {
-  SUPER_ADMIN: <Crown className="w-5 h-5 text-amber-500" />,
-  SALES_MANAGER: <Briefcase className="w-5 h-5 text-purple-600" />,
-  MEDICAL_REP: <UserCheck className="w-5 h-5 text-indigo-600" />,
-  INVENTORY_OFFICER: <Package className="w-5 h-5 text-cyan-600" />,
-  FINANCE_OFFICER: <Landmark className="w-5 h-5 text-emerald-600" />,
-};
-
-export const RoleSwitcherModal: React.FC<Props> = ({ isOpen, onClose }) => {
+export const RoleSwitcherModal: React.FC<RoleSwitcherModalProps> = ({ isOpen, onClose }) => {
   const { currentUser, switchRole } = useAuth();
-  const [mounted, setMounted] = useState(false);
+  if (!isOpen) return null;
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const roles: { role: UserRole; title: string; desc: string }[] = [
+    {
+      role: 'OWNER',
+      title: 'مالك المنشأة (Business Owner)',
+      desc: 'كامل صلاحيات النظام والإقرارات الضريبية وربط ZATCA والإحصائيات.'
+    },
+    {
+      role: 'FINANCE_MANAGER',
+      title: 'مديرة الحسابات والضرائب (Finance Manager)',
+      desc: 'إعداد الإقرارات الضريبية، خصم ضريبة المدخلات، وسداد مبالغ ZATCA.'
+    },
+    {
+      role: 'STORE_KEEPER',
+      title: 'أمين المستودع الرئيسي (Store Keeper)',
+      desc: 'إدارة مخزون البضاعة، استلام الشحنات، والتسويات الجردية.'
+    },
+    {
+      role: 'CASHIER',
+      title: 'كاشير نقاط البيع (POS Cashier)',
+      desc: 'إصدار الفواتير المبسطة B2C وطباعة إيصالات ZATCA QR.'
+    }
+  ];
 
-  if (!isOpen || !mounted) return null;
-
-  return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="w-full max-w-xl bg-white/95 backdrop-blur-2xl border border-purple-100 rounded-[28px] shadow-2xl overflow-hidden my-auto">
-        {/* Header */}
-        <div className="p-6 border-b border-purple-100/60 bg-purple-50/40 flex items-center justify-between">
-          <button
-            onClick={onClose}
-            className="p-2 rounded-full text-slate-400 hover:text-purple-600 hover:bg-purple-100 transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <h2 className="text-lg font-black text-slate-900">تبديل الدور التجريبي — RBAC</h2>
-              <p className="text-xs text-slate-500 font-semibold">اختر أي دور لاختبار صلاحيات التفويض فوراً</p>
-            </div>
-            <div className="p-2.5 rounded-2xl bg-purple-100 text-purple-600">
-              <ShieldCheck className="w-6 h-6" />
-            </div>
+  return (
+    <div style={{ position: 'fixed', inset: 0, zIndex: 99, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(4px)', padding: 16 }} className="fade-up">
+      <div className="card" style={{ width: '100%', maxWidth: 450, padding: 24, display: 'flex', flexDirection: 'column', gap: 16, background: '#FFF' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--border)', paddingBottom: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <UserCheck style={{ width: 20, height: 20, color: 'var(--g-600)' }} />
+            <h3 style={{ fontSize: 16, fontWeight: 900, color: 'var(--text-primary)', margin: 0 }}>تغيير دور المستخدم التجريبي</h3>
           </div>
+          <button onClick={onClose} style={{ border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>
+            <X style={{ width: 18, height: 18 }} />
+          </button>
         </div>
 
-        {/* Roles List */}
-        <div className="p-6 grid grid-cols-1 gap-3.5 max-h-[70vh] overflow-y-auto">
-          {DEMO_USERS.map((user) => {
-            const isSelected = currentUser?.id === user.id;
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {roles.map((item) => {
+            const isSelected = currentUser?.role === item.role;
             return (
-              <div
-                key={user.id}
+              <button
+                key={item.role}
+                type="button"
                 onClick={() => {
-                  switchRole(user.role);
+                  switchRole(item.role);
                   onClose();
                 }}
-                className={`p-4.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
-                  isSelected
-                    ? 'bg-purple-50/80 border-purple-300 shadow-sm shadow-purple-500/10'
-                    : 'bg-slate-50/60 border-slate-100 hover:border-purple-200 hover:bg-purple-50/40'
-                }`}
+                style={{
+                  width: '100%',
+                  padding: 14,
+                  borderRadius: 10,
+                  textAlign: 'right',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'flex-start',
+                  justifyContent: 'space-between',
+                  gap: 12,
+                  border: isSelected ? '1px solid var(--g-600)' : '1px solid var(--border)',
+                  backgroundColor: isSelected ? 'var(--g-50)' : '#FFF',
+                  transition: 'all 0.15s ease'
+                }}
               >
-                <div className="text-right">
-                  <span
-                    className={`inline-block px-3.5 py-1 rounded-full text-xs font-extrabold ${
-                      isSelected
-                        ? 'bg-purple-600 text-white shadow-sm shadow-purple-500/20'
-                        : 'bg-slate-200/80 text-slate-600'
-                    }`}
-                  >
-                    {isSelected ? 'الدور الحالي' : 'التبديل إليه'}
-                  </span>
+                <div>
+                  <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-primary)' }}>{item.title}</div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 2 }}>{item.desc}</div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <div className="flex items-center gap-2 justify-end">
-                      {ROLE_ICONS[user.role]}
-                      <h3 className="font-extrabold text-slate-900 text-sm">{user.name}</h3>
-                    </div>
-                    <p className="text-xs text-purple-600 font-bold">{user.roleTitle}</p>
-                    <p className="text-[11px] text-slate-400 font-semibold mt-0.5">{user.department}</p>
-                  </div>
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-purple-200 shadow-sm"
-                  />
-                </div>
-              </div>
+                {isSelected && (
+                  <CheckCircle2 style={{ width: 18, height: 18, color: 'var(--g-600)', flexShrink: 0, marginTop: 2 }} />
+                )}
+              </button>
             );
           })}
         </div>
       </div>
-    </div>,
-    document.body
+    </div>
   );
 };
-
 
