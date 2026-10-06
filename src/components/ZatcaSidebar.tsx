@@ -4,13 +4,13 @@ import React, { useState } from 'react';
 import {
   LayoutDashboard, ShieldCheck, Calculator,
   ShoppingCart, ShoppingBag, Package,
-  Warehouse, Users, RotateCcw, BarChart3, ChevronDown, AlertTriangle, X
+  Warehouse, Users, RotateCcw, BarChart3, ChevronDown, AlertTriangle, X, LogOut, MoreVertical, User, FileText
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export type ActiveTab =
   | 'dashboard' | 'zatca_portal' | 'vat_calculator'
-  | 'pos_sales' | 'purchases' | 'products'
+  | 'pos_sales' | 'purchases' | 'products' | 'invoices'
   | 'inventory' | 'stakeholders' | 'returns' | 'reports';
 
 const NAV = [
@@ -26,6 +26,7 @@ const NAV = [
     label: 'العمليات',
     items: [
       { id: 'pos_sales'    as ActiveTab, label: 'المبيعات',   icon: ShoppingCart },
+      { id: 'invoices'     as ActiveTab, label: 'الفواتير',   icon: FileText },
       { id: 'purchases'    as ActiveTab, label: 'المشتريات',  icon: ShoppingBag },
       { id: 'returns'      as ActiveTab, label: 'المرتجعات',  icon: RotateCcw },
     ]
@@ -51,7 +52,8 @@ interface Props {
 
 export const ZatcaSidebar: React.FC<Props> = ({ activeTab, onTabChange: rawTabChange, open = false, onClose }) => {
   const onTabChange = (tab: ActiveTab) => { rawTabChange(tab); onClose?.(); };
-  const { zatca, isZatcaActivated } = useAuth();
+  const { zatca, isZatcaActivated, currentUser, logout } = useAuth();
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
   const notStarted = zatca.status === 'NOT_CONNECTED';
   const zatcaBadge = (() => {
     switch (zatca.status) {
@@ -72,9 +74,11 @@ export const ZatcaSidebar: React.FC<Props> = ({ activeTab, onTabChange: rawTabCh
     <div className={`sidebar-backdrop ${open ? 'open' : ''}`} onClick={onClose} aria-hidden="true" />
     <aside className={`sidebar ${open ? 'open' : ''}`}>
       {/* Logo */}
-      <div className="sidebar-logo">
-        <div className="sidebar-logo-mark">Z</div>
-        <span className="sidebar-logo-text">ZATCA Flow</span>
+      <div className="sidebar-logo" dir="ltr">
+        <img src="/green-zakPocket.png" alt="zakPocket Logo" className="sidebar-logo-img" />
+        <span className="sidebar-logo-text">
+          zak<span className="highlight">Pocket</span>
+        </span>
         <button type="button" className="sidebar-close-btn" onClick={onClose} aria-label="إغلاق القائمة">
           <X style={{ width: 16, height: 16 }} />
         </button>
@@ -109,45 +113,104 @@ export const ZatcaSidebar: React.FC<Props> = ({ activeTab, onTabChange: rawTabCh
       </nav>
 
       {/* Footer */}
-      <div style={{ padding: '12px 16px', borderTop: '1px solid var(--border)' }}>
-        {isZatcaActivated ? (
-          <div style={{
-            padding: '10px 12px',
-            borderRadius: 10,
-            background: 'var(--g-50)',
-            border: '1px solid var(--g-100)'
+      {/* Footer / User Profile */}
+      <div style={{ padding: '16px 20px', borderTop: '1px solid var(--border)', background: 'var(--white)', marginTop: 'auto', position: 'relative' }}>
+        
+        {showProfileMenu && (
+          <div className="dropdown fade-up" style={{
+            position: 'absolute', bottom: 'calc(100% - 10px)', left: 20, right: 20, zIndex: 60,
+            padding: '6px', display: 'flex', flexDirection: 'column', gap: 2
           }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <span className="live-dot" />
-              <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--g-700)' }}>
-                ZATCA متصل
+            <button
+              onClick={() => setShowProfileMenu(false)}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px',
+                borderRadius: 8, border: 'none', background: 'transparent',
+                cursor: 'pointer', fontFamily: 'inherit', color: 'var(--text-primary)',
+                fontSize: 12.5, fontWeight: 700, transition: 'background 0.15s'
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = 'var(--g-50)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              <User style={{ width: 15, height: 15, color: 'var(--g-600)' }} />
+              الملف الشخصي
+            </button>
+            <button
+              onClick={() => { setShowProfileMenu(false); logout(); }}
+              style={{
+                display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px',
+                borderRadius: 8, border: 'none', background: 'transparent',
+                cursor: 'pointer', fontFamily: 'inherit', color: '#DC2626',
+                fontSize: 12.5, fontWeight: 700, transition: 'background 0.15s'
+              }}
+              onMouseEnter={e => (e.currentTarget.style.background = '#FEF2F2')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            >
+              <LogOut style={{ width: 15, height: 15 }} />
+              تسجيل الخروج
+            </button>
+          </div>
+        )}
+
+        <div 
+          onClick={() => setShowProfileMenu(!showProfileMenu)}
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10,
+            padding: '8px', borderRadius: 12, border: '1px solid var(--border)',
+            background: 'var(--g-50)', cursor: 'pointer', transition: 'all 0.2s',
+            boxShadow: '0 2px 6px rgba(0,0,0,0.02)'
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, overflow: 'hidden' }}>
+            {currentUser?.avatar ? (
+              <img
+                src={currentUser.avatar}
+                alt={currentUser.name}
+                style={{ width: 36, height: 36, borderRadius: 10, objectFit: 'cover' }}
+              />
+            ) : (
+              <div
+                aria-hidden="true"
+                style={{
+                  width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                  background: 'linear-gradient(135deg, var(--g-600) 0%, var(--g-900) 100%)', color: '#fff',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 15, fontWeight: 900
+                }}
+              >
+                {(currentUser?.name?.trim()?.[0] ?? 'م').toUpperCase()}
+              </div>
+            )}
+            <div style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+              <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {currentUser?.name || 'مدير النظام'}
+              </span>
+              <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-muted)' }}>
+                {currentUser?.email || 'admin@zakpocket.com'}
               </span>
             </div>
-            <p style={{ fontSize: 10, color: 'var(--text-muted)', marginTop: 2 }}>
-              Phase 2 · CSID فعّال
-            </p>
           </div>
-        ) : (
-          <button
-            type="button"
-            onClick={() => onTabChange('zatca_portal')}
-            style={{
-              width: '100%', textAlign: 'right', cursor: 'pointer', fontFamily: 'inherit',
-              padding: '10px 12px', borderRadius: 10,
-              background: '#FFF8E1', border: '1px solid #F2D27A'
+          
+          <button 
+            type="button" 
+            title="خيارات الحساب"
+            style={{ 
+              width: 32, height: 32, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              border: 'none', background: 'transparent', color: 'var(--text-muted)', cursor: 'pointer', flexShrink: 0,
+              transition: 'background 0.2s, color 0.2s'
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'var(--white)';
+              e.currentTarget.style.color = 'var(--text-primary)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'var(--text-muted)';
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <AlertTriangle style={{ width: 13, height: 13, color: '#8A6100' }} />
-              <span style={{ fontSize: 11, fontWeight: 800, color: '#8A6100' }}>
-                {notStarted ? 'ZATCA غير مُفعّل' : `ZATCA · ${zatcaBadge.text}`}
-              </span>
-            </div>
-            <p style={{ fontSize: 10, color: '#8A6100', marginTop: 2 }}>
-              {notStarted ? 'اضغط لتفعيل الفوترة الإلكترونية ←' : 'اضغط لمتابعة التفعيل ←'}
-            </p>
+            <MoreVertical style={{ width: 18, height: 18 }} />
           </button>
-        )}
+        </div>
       </div>
     </aside>
     </>

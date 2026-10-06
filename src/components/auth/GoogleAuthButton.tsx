@@ -16,11 +16,14 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ onError }) =
     if (!googleClientId || typeof window === 'undefined') return;
 
     const initGoogle = () => {
+      if ((window as any).__googleInitialized) return;
+      
       if ((window as any).google?.accounts?.id) {
         try {
           (window as any).google.accounts.id.initialize({
             client_id: googleClientId,
             auto_select: false,
+            use_fedcm_for_prompt: true,
             callback: async (response: any) => {
               if (response.credential) {
                 try {
@@ -31,6 +34,7 @@ export const GoogleAuthButton: React.FC<GoogleAuthButtonProps> = ({ onError }) =
               }
             }
           });
+          (window as any).__googleInitialized = true;
         } catch (e) {
           // ignore duplicate initialization warnings in dev mode
         }

@@ -138,6 +138,20 @@ class ApiService {
     return this.request<BackendUser>('/me', {}, AUTH_BASE_URL);
   }
 
+  async forgotPassword(email: string) {
+    return this.request<unknown>('/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    }, AUTH_BASE_URL);
+  }
+
+  async resetPassword(data: { token: string; password: string }) {
+    return this.request<unknown>('/reset-password', {
+      method: 'POST',
+      body: JSON.stringify(data)
+    }, AUTH_BASE_URL);
+  }
+
   async refresh(refreshToken: string) {
     return this.request<Partial<BackendAuthResult>>('/refresh', {
       method: 'POST',

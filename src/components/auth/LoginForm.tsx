@@ -64,7 +64,28 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSwitchToSignup }) => {
           />
         </div>
         <div className={styles.field}>
-          <label className="label">كلمة المرور *</label>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+            <label className="label" style={{ marginBottom: 0 }}>كلمة المرور *</label>
+            <button 
+              type="button" 
+              onClick={() => {
+                if (!email) {
+                  setError('يرجى إدخال بريدك الإلكتروني أولاً لاستعادة كلمة المرور');
+                  return;
+                }
+                setLoading(true);
+                import('../../services/apiClient').then(({ apiClient }) => {
+                   apiClient.forgotPassword(email)
+                     .then(() => setError('تم إرسال رابط استعادة كلمة المرور إلى بريدك الإلكتروني'))
+                     .catch((err) => setError(err.message || 'حدث خطأ أثناء طلب استعادة كلمة المرور'))
+                     .finally(() => setLoading(false));
+                });
+              }}
+              style={{ background: 'none', border: 'none', color: 'var(--g-600)', fontSize: 12, fontWeight: 700, cursor: 'pointer', padding: 0 }}
+            >
+              نسيت كلمة المرور؟
+            </button>
+          </div>
           <input
             type="password"
             required

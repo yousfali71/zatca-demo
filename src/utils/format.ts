@@ -3,6 +3,7 @@
  * Uses toLocaleString with 'en-SA' locale for consistent SSR/CSR output.
  */
 export function formatSar(amount: number): string {
+  if (amount == null) return '0.00';
   return amount.toLocaleString('en-SA', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2

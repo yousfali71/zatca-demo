@@ -2,20 +2,26 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { ZatcaHeader } from '../components/ZatcaHeader';
-import { ZatcaSidebar, ActiveTab } from '../components/ZatcaSidebar';
-import { ZatcaTaxDashboard } from '../components/ZatcaTaxDashboard';
-import { ZatcaOnboardingPortal } from '../components/ZatcaOnboardingPortal';
-import { VatReturnCalculator } from '../components/VatReturnCalculator';
-import { SalesPosPortal } from '../components/SalesPosPortal';
-import { PurchasesPortal } from '../components/PurchasesPortal';
-import { ProductsInventoryPortal } from '../components/ProductsInventoryPortal';
-import { StakeholdersPortal } from '../components/StakeholdersPortal';
-import { ReturnsStockCountPortal } from '../components/ReturnsStockCountPortal';
-import { ReportsAnalyticsPortal } from '../components/ReportsAnalyticsPortal';
-import { PrintableInvoiceModal } from '../components/PrintableInvoiceModal';
-import { RoleSwitcherModal } from '../components/RoleSwitcherModal';
-import { AuthLayout, LoginForm, SignupWizard } from '../components/auth';
+import { Menu } from 'lucide-react';
+import {
+  ZatcaSidebar,
+  ZatcaTaxDashboard,
+  ZatcaOnboardingPortal,
+  VatReturnCalculator,
+  SalesPosPortal,
+  PurchasesPortal,
+  ProductsInventoryPortal,
+  StakeholdersPortal,
+  ReturnsStockCountPortal,
+  ReportsAnalyticsPortal,
+  InvoicesPortal,
+  PrintableInvoiceModal,
+  RoleSwitcherModal,
+  AuthLayout,
+  LoginForm,
+  SignupWizard
+} from '../components';
+import { ActiveTab } from '../components/ZatcaSidebar';
 import { Invoice } from '../types/zatcaErp';
 
 export default function Home() {
@@ -54,17 +60,25 @@ export default function Home() {
       <ZatcaSidebar activeTab={activeTab} onTabChange={setActiveTab} open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       <div className="main-col">
-        <ZatcaHeader
-          onOpenMenu={() => setSidebarOpen(true)}
-          onOpenFilingModal={() => setActiveTab('vat_calculator')}
-          onOpenRoleModal={() => setIsRoleModalOpen(true)}
-        />
+        {!sidebarOpen && (
+          <button
+            type="button"
+            className="topbar-icon-btn topbar-menu-btn"
+            onClick={() => setSidebarOpen(true)}
+            aria-label="فتح القائمة"
+            style={{ position: 'absolute', top: 12, left: 12, zIndex: 40 }}
+          >
+            <Menu style={{ width: 18, height: 18 }} />
+          </button>
+        )}
+
 
         <main className="page-content">
           {activeTab === 'dashboard' && <ZatcaTaxDashboard onNavigateToTab={setActiveTab} onSelectInvoiceForPrint={setSelectedInvoiceForPrint} />}
           {activeTab === 'zatca_portal' && <ZatcaOnboardingPortal />}
           {activeTab === 'vat_calculator' && <VatReturnCalculator />}
           {activeTab === 'pos_sales' && <SalesPosPortal onSelectInvoiceForPrint={setSelectedInvoiceForPrint} />}
+          {activeTab === 'invoices' && <InvoicesPortal onSelectInvoiceForPrint={setSelectedInvoiceForPrint} />}
           {activeTab === 'purchases' && <PurchasesPortal />}
           {activeTab === 'products' && <ProductsInventoryPortal />}
           {activeTab === 'inventory' && <ProductsInventoryPortal />}

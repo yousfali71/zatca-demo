@@ -102,19 +102,19 @@ export const PremiumOtpInput: React.FC<PremiumOtpInputProps> = ({
             onPaste={handlePaste}
             onFocus={(e) => e.target.select()}
             style={{
-              width: 48,
-              height: 56,
-              borderRadius: 8,
-              border: isFilled ? '2px solid #0F172A' : '1.5px solid #CBD5E1',
+              width: 56,
+              height: 64,
+              borderRadius: 12,
+              border: isFilled ? '2px solid var(--g-600)' : '2px solid #CBD5E1',
               backgroundColor: isFilled ? '#F8FAFC' : '#FFFFFF',
-              color: '#0F172A',
-              fontSize: 22,
+              color: 'var(--text-primary)',
+              fontSize: 26,
               fontWeight: 800,
               fontFamily: 'monospace',
               textAlign: 'center',
               outline: 'none',
-              transition: 'all 0.15s ease',
-              boxShadow: isFilled ? '0 2px 4px rgba(15, 23, 42, 0.06)' : 'none',
+              transition: 'all 0.2s ease',
+              boxShadow: isFilled ? '0 4px 12px rgba(15, 23, 42, 0.08)' : 'none',
               cursor: disabled ? 'not-allowed' : 'text'
             }}
           />

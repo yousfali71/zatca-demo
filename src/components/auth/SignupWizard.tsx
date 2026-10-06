@@ -125,20 +125,27 @@ export const SignupWizard: React.FC<SignupWizardProps> = ({ onSuccess, onSwitchT
           <span>لن نطلب السجل التجاري أو الرقم الضريبي أو OTP الآن — ستُدخلها عند تفعيل ZATCA لاحقاً.</span>
         </div>
 
-        <div className={styles.actionRow}>
-          <button type="button" onClick={onSwitchToLogin} className={styles.switchButton}>
-            لديك حساب؟ تسجيل الدخول
-          </button>
-          <button type="submit" disabled={loading} className="btn-primary" style={{ borderRadius: 0 }}>
-            {loading ? <span>جاري إنشاء الحساب...</span> : (
-              <>
-                <span>إنشاء الحساب</span>
-                <CheckCircle2 className="w-3.5 h-3.5" />
-              </>
-            )}
-          </button>
-        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn-primary"
+          style={{ width: '100%', justifyContent: 'center', padding: '13px 20px', fontSize: 13.5, borderRadius: 0, marginTop: 4 }}
+        >
+          {loading ? <span>جاري إنشاء الحساب...</span> : (
+            <>
+              <span>إنشاء الحساب</span>
+              <CheckCircle2 className="w-4 h-4" />
+            </>
+          )}
+        </button>
       </form>
+
+      <div className={styles.footerLink} style={{ textAlign: 'center', marginTop: 24, fontSize: 14, color: 'var(--text-muted)' }}>
+        لديك حساب بالفعل؟{' '}
+        <button type="button" onClick={onSwitchToLogin} className={styles.switchButton} style={{ background: 'none', border: 'none', color: 'var(--g-600)', fontWeight: 700, cursor: 'pointer', padding: 0 }}>
+          تسجيل الدخول
+        </button>
+      </div>
     </div>
   );
 };
