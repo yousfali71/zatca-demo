@@ -1,0 +1,19 @@
+.cardContainer {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(24px) saturate(1.4);
+  -webkit-backdrop-filter: blur(24px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-top: 4px solid #006c35;
+  border-radius: 0px;
+  padding: clamp(24px, 6vw, 36px) clamp(20px, 6vw, 36px);
+  box-shadow: 0 24px 64px rgba(0, 20, 10, 0.35), 0 2px 8px rgba(0, 0, 0, 0.1);
+}

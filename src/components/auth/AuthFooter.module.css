@@ -1,0 +1,46 @@
+.footer {
+  position: absolute;
+  bottom: 1rem;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+  letter-spacing: 0.025em;
+}
+
+@media (min-width: 768px) {
+  .footer {
+    font-size: 1rem;
+  }
+}
+
+.companyLogo {
+  height: 1.5rem;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.3));
+}
+
+@media (min-width: 768px) {
+  .companyLogo {
+    height: 1.75rem;
+  }
+}
+
+.companyName {
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.05em;
+}
+
+.year {
+  color: rgba(255, 255, 255, 0.8);
+  font-weight: 500;
+}

@@ -1,0 +1,96 @@
+.header {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.5rem 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .header {
+    padding: 1.5rem 3rem;
+  }
+}
+
+.brandWrap {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.logo {
+  height: 2.25rem;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+@media (min-width: 768px) {
+  .logo {
+    height: 2.75rem;
+  }
+}
+
+.brandTitle {
+  font-size: 1.5rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  font-family: system-ui, -apple-system, sans-serif;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+@media (min-width: 768px) {
+  .brandTitle {
+    font-size: 1.875rem;
+  }
+}
+
+.highlight {
+  color: #34d399;
+}
+
+.taglineDesktop {
+  display: none;
+  text-align: right;
+}
+
+@media (min-width: 640px) {
+  .taglineDesktop {
+    display: block;
+  }
+}
+
+.taglineText {
+  color: #ffffff;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+}
+
+@media (min-width: 768px) {
+  .taglineText {
+    font-size: 0.875rem;
+  }
+}
+
+.taglineMobile {
+  display: block;
+  position: relative;
+  z-index: 10;
+  margin-bottom: 1rem;
+  text-align: center;
+  padding: 4rem 1rem 0;
+}
+
+@media (min-width: 640px) {
+  .taglineMobile {
+    display: none;
+  }
+}

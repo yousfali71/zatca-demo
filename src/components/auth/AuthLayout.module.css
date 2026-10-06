@@ -1,0 +1,64 @@
+.pageContainer {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.bgImage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: url(/auth-bg.png);
+  background-size: cover;
+  background-position: center;
+  filter: blur(6px) brightness(0.68) saturate(1.1);
+  transform: scale(1.05);
+}
+
+.tintOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    135deg,
+    rgba(0, 26, 12, 0.72) 0%,
+    rgba(0, 55, 25, 0.6) 50%,
+    rgba(0, 95, 45, 0.48) 100%
+  );
+}
+
+.orbTopRight {
+  position: absolute;
+  top: 15%;
+  right: 10%;
+  z-index: 1;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 108, 53, 0.3) 0%,
+    transparent 70%
+  );
+  filter: blur(45px);
+}
+
+.orbBottomLeft {
+  position: absolute;
+  bottom: 12%;
+  left: 8%;
+  z-index: 1;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(200, 169, 81, 0.22) 0%,
+    transparent 70%
+  );
+  filter: blur(40px);
+}
