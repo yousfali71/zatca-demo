@@ -10,8 +10,13 @@ const cairo = Cairo({
 });
 
 export const metadata: Metadata = {
-  title: 'منظومة ZATCA TaxFlow - منصة حساب وحسابات الضرائب والفوترة الإلكترونية في السعودية',
-  description: 'منظومة متكاملة لربط المنشآت والشركات السعودية مع هيئة الزكاة والضريبة والجمارك (ZATCA Phase 2) وإدارة المبيعات والمخزون والإقرارات الضريبية.',
+  title: 'zakPocket | بوابتك الذكية للفوترة الإلكترونية',
+  description: 'منصتك المتكاملة لإدارة المبيعات والمشتريات والربط المباشر مع هيئة الزكاة والضريبة والجمارك (ZATCA Phase 2).',
+  icons: {
+    icon: '/green-zakPocket.png',
+    shortcut: '/green-zakPocket.png',
+    apple: '/green-zakPocket.png',
+  },
 };
 
 export default function RootLayout({
